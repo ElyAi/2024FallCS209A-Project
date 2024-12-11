@@ -4,5 +4,5 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/cs209
-    username: postgres
-    password: 200325Wyx
+    username: admin
+    password: 123456

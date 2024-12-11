@@ -1,4 +1,4 @@
-package org.example.cs209project;
+package CS209A.project.demo;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
