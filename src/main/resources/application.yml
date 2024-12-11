@@ -1,0 +1,8 @@
+server:
+  port: 9091
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cs209
+    username: postgres
+    password: 200325Wyx
