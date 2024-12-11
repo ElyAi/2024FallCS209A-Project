@@ -150,9 +150,9 @@ public class DataAcquire {
             String apiKey = "rl_zyHKGUaHDXG8ezSdnxX2xfgsm"; // 如果有 API 密钥，请替换这里，否则省略 "&key=" 参数
             String urlString = "";
             if (answer) {
-                urlString = "https://api.stackexchange.com/2.3/answers/" + post_id + "/comments?order=desc&sort=activity&site=stackoverflow&filter=withbody";
-            }else {
-                urlString = "https://api.stackexchange.com/2.3/questions/" + post_id + "/comments?order=desc&sort=activity&site=stackoverflow&filter=withbody";
+                urlString = "https://api.stackexchange.com/2.3/answers/" + post_id + "/comments?order=desc&sort=creation&site=stackoverflow&filter=withbody";
+            } else {
+                urlString = "https://api.stackexchange.com/2.3/questions/" + post_id + "/comments?order=desc&sort=creation&site=stackoverflow&filter=withbody";
             }
             urlString += "&key=" + apiKey;
 
@@ -256,14 +256,18 @@ public class DataAcquire {
                 user1.display_name = owner.get("display_name").asText();
                 user1.link = owner.get("link").asText();
                 user1.reputation = owner.get("reputation").asInt();
+                if (reply_to_user != null) {
+                    user2.account_id = reply_to_user.get("account_id").asInt();
+                    user2.user_id = reply_to_user.get("user_id").asInt();
+                    user2.accept_rate = reply_to_user.path("accept_rate").asInt(0);
+                    user2.user_type = reply_to_user.get("user_type").asText();
+                    user2.display_name = reply_to_user.get("display_name").asText();
+                    user2.link = reply_to_user.get("link").asText();
+                    user2.reputation = reply_to_user.get("reputation").asInt();
+                    saveUserToDatabase(user2.account_id, user2.user_id, user2.accept_rate, user2.user_type, user2.display_name, user2.link, user2.reputation);
+                } else {
 
-                user2.account_id = reply_to_user.get("account_id").asInt();
-                user2.user_id = reply_to_user.get("user_id").asInt();
-                user2.accept_rate = reply_to_user.path("accept_rate").asInt(0);
-                user2.user_type = reply_to_user.get("user_type").asText();
-                user2.display_name = reply_to_user.get("display_name").asText();
-                user2.link = reply_to_user.get("link").asText();
-                user2.reputation = reply_to_user.get("reputation").asInt();
+                }
 
 
                 long creationDateUnix = item.get("creation_date").asLong();
@@ -271,8 +275,8 @@ public class DataAcquire {
                 boolean edited = item.get("edited").asBoolean();
                 int comment_id = item.get("comment_id").asInt();
                 int post_id = item.get("post_id").asInt();
-                int answer_id = 0;
-                int question_id = 0;
+                int answer_id = -1;
+                int question_id = -1;
                 if (answer) {
                     answer_id = post_id;
                 } else {
@@ -283,7 +287,7 @@ public class DataAcquire {
                 String decodedBody = StringEscapeUtils.unescapeHtml4(body);
 
                 saveUserToDatabase(user1.account_id, user1.user_id, user1.accept_rate, user1.user_type, user1.display_name, user1.link, user1.reputation);
-                saveUserToDatabase(user2.account_id, user2.user_id, user2.accept_rate, user2.user_type, user2.display_name, user2.link, user2.reputation);
+
 
                 saveCommentToDatabase(comment_id, answer_id, question_id, creationDate, edited, user1, user2, decodedBody, score);
 
@@ -341,18 +345,22 @@ public class DataAcquire {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setLong(1, question_id);
+            pstmt.setInt(1, question_id);
             pstmt.setString(2, title);
             pstmt.setString(3, link);
             pstmt.setBoolean(4, is_answered);
             pstmt.setInt(5, view_count);
-            pstmt.setLong(6, accepted_answer_id);
+            if (accepted_answer_id == -1) {
+                pstmt.setNull(6, java.sql.Types.INTEGER);
+            } else {
+                pstmt.setInt(6, accepted_answer_id);
+            }
             pstmt.setInt(7, answer_count);
             pstmt.setInt(8, score);
             pstmt.setTimestamp(9, last_activity_date);
             pstmt.setTimestamp(10, creationDate);
             pstmt.setTimestamp(11, last_edit_date);
-            pstmt.setLong(12, owner.user_id);
+            pstmt.setInt(12, owner.user_id);
             pstmt.setString(13, body);
 
             int affectedRows = pstmt.executeUpdate();
@@ -415,9 +423,21 @@ public class DataAcquire {
             pstmt.setInt(2, score);
             pstmt.setTimestamp(3, creationDate);
             pstmt.setInt(4, owner.user_id);
-            pstmt.setInt(5, reply_to_user.user_id);
-            pstmt.setInt(6, question_id);
-            pstmt.setInt(7, answer_id);
+            if (reply_to_user.user_id == -1) {
+                pstmt.setNull(5, java.sql.Types.INTEGER);
+            } else {
+                pstmt.setInt(5, reply_to_user.user_id);
+            }
+            if (question_id == -1) {
+                pstmt.setNull(6, java.sql.Types.INTEGER);
+            } else {
+                pstmt.setInt(6, question_id);
+            }
+            if (answer_id == -1) {
+                pstmt.setNull(7, java.sql.Types.INTEGER);
+            } else {
+                pstmt.setInt(7, answer_id);
+            }
             pstmt.setBoolean(8, edited);
             pstmt.setString(9, body);
 
@@ -448,4 +468,8 @@ class User {
     public int accept_rate;
     public String display_name;
     public String link;
+
+    public User() {
+        user_id = -1;
+    }
 }
