@@ -6,3 +6,4 @@ spring:
     url: jdbc:postgresql://localhost:5432/cs209
     username: admin
     password: 123456
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver

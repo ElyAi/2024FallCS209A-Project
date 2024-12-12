@@ -1,4 +1,4 @@
-package CS209A.project.demo;
+package com.project.demo;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,7 +15,7 @@ public class DataAcquire {
 
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/cs209";
     private static final String DB_USER = "postgres";
-    private static final String DB_PASSWORD = "200325Wyx";
+    private static final String DB_PASSWORD = "yl20040221";
 
     public static void main(String[] args) {
         try {
