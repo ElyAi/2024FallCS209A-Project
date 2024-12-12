@@ -67,7 +67,7 @@ create table comments
     foreign key (reply_to_id) references users(user_id)
 );
 
-DROP TABLE comments;
-DROP TABLE answers;
-DROP TABLE questions;
-DROP TABLE users;
+-- DROP TABLE comments;
+-- DROP TABLE answers;
+-- DROP TABLE questions;
+-- DROP TABLE users;

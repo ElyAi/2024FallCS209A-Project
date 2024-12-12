@@ -1,4 +1,4 @@
-package org.example.cs209project;
+package com.project.demo;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

@@ -1,4 +1,4 @@
-package CS209A.project.demo;
+package com.project.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
