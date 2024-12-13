@@ -6,7 +6,7 @@ import java.net.URL;
 public class Test {
     public static void main(String[] args) {
         try {
-            URL url = new URL("https://api.stackexchange.com/2.3/questions?order=desc&sort=votes&tagged=java&site=stackoverflow");
+            URL url = new URL("https://api.stackexchange.com/2.3/questions?order=desc&sort=votes&tagged=java&site=stackoverflow&key=rl_zyHKGUaHDXG8ezSdnxX2xfgsm");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(5000);  // 5 秒超时

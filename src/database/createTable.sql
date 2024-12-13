@@ -27,6 +27,8 @@ create table questions
     last_edit_date     timestamp,
     owner_id           int,
     body               text,
+    down_vote_count    int,
+    up_vote_count      int,
     foreign key (owner_id) references users(user_id)
 );
 
@@ -66,6 +68,21 @@ create table comments
     foreign key (owner_id) references users(user_id),
     foreign key (reply_to_id) references users(user_id)
 );
+
+create table tags
+(
+    tag_id             serial primary key,
+    tag_name           varchar(500) unique
+);
+
+create table question_tag
+(
+    question_id int,
+    tag_id int,
+    primary key (question_id, tag_id),
+    foreign key (question_id) references questions(question_id),
+    foreign key (tag_id) references tags(tag_id)
+)
 
 -- DROP TABLE comments;
 -- DROP TABLE answers;

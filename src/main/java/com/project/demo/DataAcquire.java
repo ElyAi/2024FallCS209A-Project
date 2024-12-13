@@ -20,7 +20,7 @@ public class DataAcquire {
     public static void main(String[] args) {
         try {
             String apiKey = "rl_zyHKGUaHDXG8ezSdnxX2xfgsm"; // 如果有 API 密钥，请替换这里，否则省略 "&key=" 参数
-            String urlString = "https://api.stackexchange.com/2.3/questions?page=1&pagesize=100&order=desc&sort=votes&tagged=java&site=stackoverflow&filter=withbody";
+            String urlString = "https://api.stackexchange.com/2.3/questions?page=10&pagesize=100&order=desc&sort=votes&tagged=java&site=stackoverflow&filter=withbody";
             if (!apiKey.isEmpty()) {
                 urlString += "&key=" + apiKey;
             }
@@ -98,8 +98,10 @@ public class DataAcquire {
                 int accepted_answer_id = item.path("accepted_answer_id").asInt(-1);
                 String body = item.get("body").asText();
                 String decodedBody = StringEscapeUtils.unescapeHtml4(body);
+                int down_vote_count = item.get("down_vote_count").asInt();
+                int up_vote_count = item.get("up_vote_count").asInt();
 
-                saveQuestionToDatabase(question_id, title, link, score, creationDate, is_answered, view_count, answer_count, last_edit_date, last_activity_date, accepted_answer_id, user, decodedBody);
+                saveQuestionToDatabase(question_id, title, link, score, creationDate, is_answered, view_count, answer_count, last_edit_date, last_activity_date, accepted_answer_id, user, decodedBody, down_vote_count, up_vote_count);
 
                 fetchAnswersForQuestion(question_id);
                 fetchCommentsForQuestion(question_id, false);
@@ -348,8 +350,8 @@ public class DataAcquire {
         }
     }
 
-    public static void saveQuestionToDatabase(int question_id, String title, String link, int score, Timestamp creationDate, boolean is_answered, int view_count, int answer_count, Timestamp last_activity_date, Timestamp last_edit_date, int accepted_answer_id, User owner, String body) throws Exception {
-        String insertQuery = "INSERT INTO questions (question_id, title, link, is_answered, view_count, accepted_answer_id, answer_count, score, last_activity_date, creation_date, last_edit_date, owner_id, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (question_id) DO NOTHING";
+    public static void saveQuestionToDatabase(int question_id, String title, String link, int score, Timestamp creationDate, boolean is_answered, int view_count, int answer_count, Timestamp last_activity_date, Timestamp last_edit_date, int accepted_answer_id, User owner, String body, int down_vote_count, int up_vote_count) throws Exception {
+        String insertQuery = "INSERT INTO questions (question_id, title, link, is_answered, view_count, accepted_answer_id, answer_count, score, last_activity_date, creation_date, last_edit_date, owner_id, body, down_vote_count, up_vote_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (question_id) DO NOTHING";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
@@ -375,6 +377,8 @@ public class DataAcquire {
                 pstmt.setInt(12, owner.user_id);
             }
             pstmt.setString(13, body);
+            pstmt.setInt(14, down_vote_count);
+            pstmt.setInt(15, up_vote_count);
 
             int affectedRows = pstmt.executeUpdate();
 
