@@ -13,18 +13,19 @@ import java.util.List;
 public class UserServerImpl extends ServiceImpl<UserMapper, User> implements UserServer{
 
     @Override
-    public List<User> getHighReputationUsersWithValue(int standardValue) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.ge("reputation", standardValue); // ge表示大于等于（greater than or equal to）
-        return this.list(queryWrapper); // 使用MyBatis-Plus的list方法执行查询
+    public List<User> getHighReputationUsersWithValue(double standardValue) {
+        return baseMapper.highReputationUsersByValue(standardValue);
     }
 
     @Override
     public List<User> getHighReputationUsersWithRank(int standardValueRank) {
-        // 子查询，获取声誉值最高的前standardValueRank个值
-        String subQuery = "SELECT reputation FROM users ORDER BY reputation DESC LIMIT " + standardValueRank;
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("reputation IN (" + subQuery + ")"); // apply方法用于执行复杂的查询条件
-        return this.list(queryWrapper); // 使用MyBatis-Plus的list方法执行查询
+        return baseMapper.highReputationUsersByRank(standardValueRank);
     }
+
+    @Override
+    public List<Integer> getHighReputationUsersWithAvg() {
+        return baseMapper.highReputationUsersByValue(271720).stream()
+                .map(User::getUserId).toList();
+    }
+
 }

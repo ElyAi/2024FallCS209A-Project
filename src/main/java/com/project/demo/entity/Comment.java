@@ -1,11 +1,13 @@
 package com.project.demo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -15,17 +17,20 @@ import java.sql.Timestamp;
 @Accessors(chain = true)
 @TableName("comments")
 public class Comment implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     @NonNull
-    private Integer comment_id;
+    private Integer commentId;
     private Integer score;
-    private Timestamp creation_date;
-    private Integer owner_id;
-    private Integer reply_to_id;
-    private Integer question_id;
-    private Integer answer_id;
+    private Timestamp creationDate;
+    private Integer ownerId;
+    private Integer replyToId;
+    private Integer questionId;
+    private Integer answerId;
     private Boolean edited;
     private String body;
+    @TableField(exist = false)
+    private Answer answer;
 }

@@ -1,12 +1,13 @@
 package com.project.demo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -16,21 +17,25 @@ import java.sql.Timestamp;
 @Accessors(chain = true)
 @TableName("questions")
 public class Question implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     @NonNull
-    private Integer question_id;
+    private Integer questionId;
     private String title;
     private String link;
-    private Boolean is_answered;
-    private Integer view_count;
-    private Integer accepted_answer_id;
-    private Integer answer_count;
+    private Boolean isAnswered;
+    private Integer viewCount;
+    private Integer acceptedAnswerId;
+    @TableField(exist = false)
+    private Integer answerCount;
     private Integer score;
-    private Timestamp last_activity_date;
-    private Timestamp creation_date;
-    private Timestamp last_edit_date;
-    private Integer owner_id;
-    private String text;
+    private Timestamp lastActivityDate;
+    private Timestamp creationDate;
+    private Timestamp lastEditDate;
+    private Integer ownerId;
+    private String body;
+    private Integer downVoteCount;
+    private Integer upVoteCount;
 }

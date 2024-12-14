@@ -6,7 +6,9 @@ import com.project.demo.entity.User;
 import java.util.List;
 
 public interface UserServer extends IService<User> {
-    List<User> getHighReputationUsersWithValue(int standardValue);
+    List<User> getHighReputationUsersWithValue(double standardValue);
 
     List<User> getHighReputationUsersWithRank(int standardValueRank);
+
+    List<Integer> getHighReputationUsersWithAvg();
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -15,18 +16,18 @@ import java.sql.Timestamp;
 @Accessors(chain = true)
 @TableName("answers")
 public class Answer implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-    @NonNull
-    private Integer answer_id;
-    private Boolean is_accepted;
+    @TableId(type = IdType.NONE)
+    private Integer answerId;
+    private Boolean isAccepted;
     private Integer score;
-    private Timestamp community_owned_date;
-    private Timestamp last_activity_date;
-    private Timestamp creation_date;
-    private Timestamp last_edit_date;
-    private Integer question_id;
-    private Integer owner_id;
+    private Timestamp communityOwnedDate;
+    private Timestamp lastActivityDate;
+    private Timestamp creationDate;
+    private Timestamp lastEditDate;
+    private Integer questionId;
+    private Integer ownerId;
     private String body;
 }

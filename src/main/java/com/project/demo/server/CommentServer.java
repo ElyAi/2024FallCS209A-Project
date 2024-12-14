@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.project.demo.entity.Comment;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CommentServer extends IService<Comment> {
-    List<Comment> getCommentsByQuestionId(int questionId);
+    List<Integer> getQuestionIdByUserId(int userId);
 
-    List<Comment> getCommentsByAnswerId(int answerId);
+    List<Integer> getQuestionIdByUserIdList(List<Integer> userIdList);
 
-    List<Comment> getCommentsByUserId(int userId);
+    Map<String, Integer> searchErrorInComment();
+
+    Map<String, Integer> searchExceptionInComment();
 }

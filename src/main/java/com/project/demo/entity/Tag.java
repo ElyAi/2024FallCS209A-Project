@@ -13,19 +13,12 @@ import java.io.Serializable;
 @NoArgsConstructor  //无参构造
 @Data      //get、set方法和重新toString方法
 @Accessors(chain = true)
-@TableName("users")
-public class User implements Serializable {
+@TableName("tags")
+public class Tag implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-    @NonNull
-    private Integer accountId;
-    @NonNull
-    private Integer userId;
-    private Integer reputation;
-    private String userType;
-    private Integer acceptRate;
-    private String displayName;
-    private String link;
+
+    @TableId(type = IdType.NONE)
+    private Integer tagId;
+    private String tagName;
 }
