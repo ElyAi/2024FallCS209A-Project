@@ -1,5 +1,7 @@
 package com.project.demo.test;
 
+import com.project.demo.controller.CommonMistakesController;
+import com.project.demo.controller.JavaTopicController;
 import com.project.demo.controller.UserEngagementController;
 import com.project.demo.entity.QuestionTag;
 import com.project.demo.entity.User;
@@ -40,8 +42,15 @@ public class testTag {
     @Autowired
     private UserEngagementController userEngagementController;
 
+    @Autowired
+    private JavaTopicController javaTopicController;
+
+    @Autowired
+    private CommonMistakesController commonMistakesController;
+
+
     @Test
     public void testSelect() {
-        System.out.println(userEngagementController.getHighQuality(5));
+        System.out.println(commonMistakesController.getException(5));
     }
 }

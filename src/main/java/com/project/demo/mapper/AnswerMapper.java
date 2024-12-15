@@ -23,4 +23,9 @@ public interface AnswerMapper extends BaseMapper<Answer> {
             "WHERE body LIKE #{keyword}")
     List<Answer> searchAnswersByKeywords(String keyword);
 
+//    @Select("SELECT * " +
+//            "FROM answers " +
+//            "WHERE body LIKE #{keyword}")
+//    List<Answer>
+
 }

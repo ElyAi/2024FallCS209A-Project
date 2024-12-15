@@ -24,13 +24,9 @@ public class JavaTopicController {
     @GetMapping("/getTopTopic")
     public List<Map.Entry<String, Integer>> getTopTopic(int topN) {
         Map<String, Integer> map = questionTagServer.searchTopicMap();
-        List<Map.Entry<String, Integer>> list = new ArrayList<>(map.entrySet());
-        // 降序排列
-        list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        List<Map.Entry<String, Integer>> topList = new ArrayList<>();
-        for (int i = 1; i < topN + 1 && i < list.size(); i++) {
-            topList.add(list.get(i));
-        }
-        return topList;
+        return map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(topN)
+                .toList();
     }
 }

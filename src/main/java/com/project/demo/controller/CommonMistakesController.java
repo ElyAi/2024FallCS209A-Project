@@ -33,14 +33,10 @@ public class CommonMistakesController {
         errorMap.putAll(answerServer.searchErrorInAnswer());
         errorMap.putAll(commentServer.searchErrorInComment());
 
-        List<Map.Entry<String, Integer>> errorList = new ArrayList<>(errorMap.entrySet());
-        // 降序排列
-        errorList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        List<Map.Entry<String, Integer>> topErrors = new ArrayList<>();
-        for (int i = 0; i < topN && i < errorList.size(); i++) {
-            topErrors.add(errorList.get(i));
-        }
-        return topErrors;
+        return errorMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(topN)
+                .toList();
     }
 
     @GetMapping("/getException")
@@ -50,14 +46,10 @@ public class CommonMistakesController {
         exceptionMap.putAll(answerServer.searchExceptionInAnswer());
         exceptionMap.putAll(commentServer.searchExceptionInComment());
 
-        List<Map.Entry<String, Integer>> exceptionList = new ArrayList<>(exceptionMap.entrySet());
-        // 降序排列
-        exceptionList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        List<Map.Entry<String, Integer>> topExceptions = new ArrayList<>();
-        for (int i = 0; i < topN && i < exceptionList.size(); i++) {
-            topExceptions.add(exceptionList.get(i));
-        }
-        return topExceptions;
+        return exceptionMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(topN)
+                .toList();
     }
 
 }

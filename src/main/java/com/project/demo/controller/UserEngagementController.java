@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,7 +33,7 @@ public class UserEngagementController {
     }
 
     @GetMapping("/getHighQualityTopic")
-    public List<Map.Entry<String, Integer>> getHighQuality(int topN) {
+    public List<Map.Entry<String, Long>> getHighQuality(int topN) {
         List<Integer> userIdList = userServer.getHighReputationUsersWithAvg();
         System.out.println("userIdList get over");
         List<Integer> questionIdList1 = commentServer.getQuestionIdByUserIdList(userIdList);
@@ -49,24 +50,30 @@ public class UserEngagementController {
 
         System.out.println("questionIdCountMap get over");
         // 记录结果--标签
-        Map<String, Integer> highQualityTopic = new HashMap<>();
-        for (Map.Entry<Integer, Long> map : questionIdCountMap.entrySet()) {
-            List<String> topics = questionTagServer.searchTopicByQuestionId(map.getKey());
+        ConcurrentHashMap<String, Long> highQualityTopic = new ConcurrentHashMap<>();
+        questionIdCountMap.entrySet().parallelStream().forEach(entry -> {
+            List<String> topics = questionTagServer.searchTopicByQuestionId(entry.getKey());
+            Long times = entry.getValue();
             for (String topic : topics) {
-                for (int i = 0; i < map.getValue(); i++) {
-                    highQualityTopic.put(topic, highQualityTopic.getOrDefault(topic, 0) + 1);
-                }
+                if (topic == null) continue;
+                highQualityTopic.compute(topic,
+                        (key, value) -> (value == null) ? times : value + times);
             }
-        }
+        });
 
-        List<Map.Entry<String, Integer>> list = new ArrayList<>(highQualityTopic.entrySet());
-        // 降序排列
-        list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        List<Map.Entry<String, Integer>> topList = new ArrayList<>();
-        for (int i = 1; i < topN + 1 && i < list.size(); i++) {
-            topList.add(list.get(i));
-        }
-        return topList;
+//        for (Map.Entry<Integer, Long> map : questionIdCountMap.entrySet()) {
+//            List<String> topics = questionTagServer.searchTopicByQuestionId(map.getKey());
+//            for (String topic : topics) {
+//                if (topic == null) continue;
+//                Long value = map.getValue();
+//                highQualityTopic.put(topic, highQualityTopic.getOrDefault(topic, 0L) + value);
+//            }
+//        }
+
+        return highQualityTopic.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(topN)
+                .toList();
 
     }
 

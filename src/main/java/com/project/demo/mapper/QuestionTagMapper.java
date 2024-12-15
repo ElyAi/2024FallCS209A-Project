@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 public interface QuestionTagMapper extends BaseMapper<QuestionTag> {
-    @Select("select * from question_tag")
+    @Select("SELECT * FROM question_tag WHERE tag_id != 1")
     @Results({
             @Result(column = "tag_id", property = "tagId"),
             @Result(column = "question_id", property = "questionId"),
