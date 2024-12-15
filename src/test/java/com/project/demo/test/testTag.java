@@ -1,5 +1,6 @@
 package com.project.demo.test;
 
+import com.project.demo.controller.AnswerQualityController;
 import com.project.demo.controller.CommonMistakesController;
 import com.project.demo.controller.JavaTopicController;
 import com.project.demo.controller.UserEngagementController;
@@ -48,9 +49,12 @@ public class testTag {
     @Autowired
     private CommonMistakesController commonMistakesController;
 
+    @Autowired
+    private AnswerQualityController answerQualityController;
+
 
     @Test
     public void testSelect() {
-        System.out.println(commonMistakesController.getException(5));
+        System.out.println(answerQualityController.getReputationInfluenceQuality());
     }
 }

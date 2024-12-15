@@ -28,7 +28,6 @@ public class Question implements Serializable {
     private Boolean isAnswered;
     private Integer viewCount;
     private Integer acceptedAnswerId;
-    @TableField(exist = false)
     private Integer answerCount;
     private Integer score;
     private Timestamp lastActivityDate;

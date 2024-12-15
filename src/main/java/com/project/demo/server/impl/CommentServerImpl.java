@@ -28,7 +28,7 @@ public class CommentServerImpl extends ServiceImpl<CommentMapper, Comment> imple
 
     @Override
     public List<Integer> getQuestionIdByUserIdList(List<Integer> userIdList) {
-        return userIdList.stream()
+        return userIdList.parallelStream()
                 .map(this::getQuestionIdByUserId)
                 .flatMap(List::stream)
                 .toList();

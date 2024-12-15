@@ -1,5 +1,6 @@
 package com.project.demo.controller;
 
+import com.project.demo.exception.*;
 import com.project.demo.server.AnswerServer;
 import com.project.demo.server.CommentServer;
 import com.project.demo.server.QuestionServer;
@@ -26,7 +27,7 @@ public class CommonMistakesController {
         this.commentServer = commentServer;
     }
 
-    @GetMapping("/getError")
+    @GetMapping("/getTopNError")
     public List<Map.Entry<String, Integer>> getError(int topN) {
         Map<String, Integer> errorMap = new HashMap<String, Integer>();
         errorMap.putAll(questionServer.searchErrorInQuestion());
@@ -39,7 +40,7 @@ public class CommonMistakesController {
                 .toList();
     }
 
-    @GetMapping("/getException")
+    @GetMapping("/getTopNException")
     public List<Map.Entry<String, Integer>> getException(int topN) {
         Map<String, Integer> exceptionMap = new HashMap<String, Integer>();
         exceptionMap.putAll(questionServer.searchExceptionInQuestion());
@@ -50,6 +51,41 @@ public class CommonMistakesController {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(topN)
                 .toList();
+    }
+
+    @GetMapping("/getSpecificError")
+    public Integer getSpecificError(String errorName) {
+        if (errorName == null){
+            throw new BadRequestException("errorName不能为空");
+        }
+
+        Map<String, Integer> errorMap = new HashMap<String, Integer>();
+        errorMap.putAll(questionServer.searchErrorInQuestion());
+        errorMap.putAll(answerServer.searchErrorInAnswer());
+        errorMap.putAll(commentServer.searchErrorInComment());
+
+        if (!errorMap.containsKey(errorName)) {
+            throw new ResourceNotFoundException(errorName + "不存在");
+        }
+
+        return errorMap.get(errorName);
+    }
+
+    @GetMapping("/getSpecificException")
+    public Integer getSpecificException(String exceptionName) {
+        if (exceptionName == null){
+            throw new BadRequestException("exceptionName不能为空");
+        }
+        Map<String, Integer> exceptionMap = new HashMap<String, Integer>();
+        exceptionMap.putAll(questionServer.searchExceptionInQuestion());
+        exceptionMap.putAll(answerServer.searchExceptionInAnswer());
+        exceptionMap.putAll(commentServer.searchExceptionInComment());
+
+        if (!exceptionMap.containsKey(exceptionName)) {
+            throw new ResourceNotFoundException(exceptionName + "不存在");
+        }
+
+        return exceptionMap.get(exceptionName);
     }
 
 }

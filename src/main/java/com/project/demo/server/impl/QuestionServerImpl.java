@@ -59,7 +59,7 @@ public class QuestionServerImpl extends ServiceImpl<QuestionMapper, Question> im
 
     @Override
     public List<Integer> getQuestionIdByUserIdList(List<Integer> userIdList) {
-        return userIdList.stream()
+        return userIdList.parallelStream()
                 .map(this::getQuestionIdByUserId)
                 .flatMap(List::stream)
                 .toList();

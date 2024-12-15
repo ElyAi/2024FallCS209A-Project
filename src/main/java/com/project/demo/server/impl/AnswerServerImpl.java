@@ -9,15 +9,21 @@ import com.project.demo.server.UserServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AnswerServerImpl extends ServiceImpl<AnswerMapper, Answer> implements AnswerServer {
+
+    private final AnswerMapper answerMapper;
+
+    public AnswerServerImpl(AnswerMapper answerMapper) {
+        this.answerMapper = answerMapper;
+    }
 
     @Override
     public List<Integer> getQuestionIdByUserId(int userId) {
@@ -26,7 +32,7 @@ public class AnswerServerImpl extends ServiceImpl<AnswerMapper, Answer> implemen
 
     @Override
     public List<Integer> getQuestionIdByUserIdList(List<Integer> userIdList) {
-        return userIdList.stream()
+        return userIdList.parallelStream()
                 .map(this::getQuestionIdByUserId)
                 .flatMap(List::stream)
                 .toList();
@@ -39,7 +45,7 @@ public class AnswerServerImpl extends ServiceImpl<AnswerMapper, Answer> implemen
 
     @Override
     public List<Integer> getQuestionIdByAnswerIdList(List<Integer> answerIdList) {
-        return answerIdList.stream()
+        return answerIdList.parallelStream()
                 .map(this::getQuestionIdByAnswerId)
                 .flatMap(List::stream)
                 .toList();
@@ -77,6 +83,26 @@ public class AnswerServerImpl extends ServiceImpl<AnswerMapper, Answer> implemen
         });
 
         return exceptionMap;
+    }
+
+    // 获取所有有效的回答即所回答的问题有回答被采用了或有高分回答
+    @Override
+    public List<Answer> getValidAnswer() {
+        int highScoreRank = (int) (answerMapper.selectCount(null) / 100);
+
+        List<Integer> questionIdListByAccepted = baseMapper.selectQuestionIdHasAcceptedAnswer();
+        List<Integer> questionIdListByScore = baseMapper.selectQuestionIdHasHighScoreAnswer(highScoreRank);
+
+        List<Integer> questionIdList = Stream.of(questionIdListByAccepted, questionIdListByScore)
+                .flatMap(Collection::stream)
+                .distinct()
+                .toList();
+
+        CopyOnWriteArrayList<Answer> validAnswersList = new CopyOnWriteArrayList<>();
+        questionIdList.parallelStream().forEach(questionId -> {
+            validAnswersList.addAll(baseMapper.selectByQuestionId(questionId));
+        });
+        return validAnswersList;
     }
 
 }

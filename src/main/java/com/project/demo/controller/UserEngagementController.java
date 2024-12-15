@@ -55,7 +55,7 @@ public class UserEngagementController {
             List<String> topics = questionTagServer.searchTopicByQuestionId(entry.getKey());
             Long times = entry.getValue();
             for (String topic : topics) {
-                if (topic == null) continue;
+//                if (topic == null) continue;
                 highQualityTopic.compute(topic,
                         (key, value) -> (value == null) ? times : value + times);
             }

@@ -15,8 +15,10 @@ public interface AnswerServer extends IService<Answer> {
 
     List<Integer> getQuestionIdByAnswerIdList(List<Integer> answerIdList);
 
-
     Map<String, Integer> searchErrorInAnswer();
 
     Map<String, Integer> searchExceptionInAnswer();
+
+    List<Answer> getValidAnswer();
+
 }
