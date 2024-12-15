@@ -24,6 +24,12 @@ public class JavaTopicController {
 
     @GetMapping("/getTopNTopic")
     public List<Map.Entry<String, Integer>> getTopTopic(int topN) {
+        if (topN <= 0) {
+            throw new BadRequestException("传入topN不能小于或等于0");
+        }
+        if (topN > 500) {
+            throw new BadRequestException("传入topN不能大于500");
+        }
         Map<String, Integer> map = questionTagServer.searchTopicMap();
         return map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))

@@ -1,5 +1,6 @@
 package com.project.demo.controller;
 
+import com.project.demo.exception.BadRequestException;
 import com.project.demo.server.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,13 @@ public class UserEngagementController {
 
     @GetMapping("/getHighQualityTopic")
     public List<Map.Entry<String, Long>> getHighQuality(int topN) {
+        if (topN <= 0) {
+            throw new BadRequestException("传入topN不能小于或等于0");
+        }
+        if (topN > 500) {
+            throw new BadRequestException("传入topN不能大于500");
+        }
+
         List<Integer> userIdList = userServer.getHighReputationUsersWithAvg();
         System.out.println("userIdList get over");
         List<Integer> questionIdList1 = commentServer.getQuestionIdByUserIdList(userIdList);

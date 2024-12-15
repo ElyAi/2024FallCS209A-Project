@@ -29,6 +29,12 @@ public class CommonMistakesController {
 
     @GetMapping("/getTopNError")
     public List<Map.Entry<String, Integer>> getError(int topN) {
+        if (topN <= 0) {
+            throw new BadRequestException("传入topN不能小于或等于0");
+        }
+        if (topN > 500) {
+            throw new BadRequestException("传入topN不能大于500");
+        }
         Map<String, Integer> errorMap = new HashMap<String, Integer>();
         errorMap.putAll(questionServer.searchErrorInQuestion());
         errorMap.putAll(answerServer.searchErrorInAnswer());
@@ -42,6 +48,12 @@ public class CommonMistakesController {
 
     @GetMapping("/getTopNException")
     public List<Map.Entry<String, Integer>> getException(int topN) {
+        if (topN <= 0) {
+            throw new BadRequestException("传入topN不能小于或等于0");
+        }
+        if (topN > 500) {
+            throw new BadRequestException("传入topN不能大于500");
+        }
         Map<String, Integer> exceptionMap = new HashMap<String, Integer>();
         exceptionMap.putAll(questionServer.searchExceptionInQuestion());
         exceptionMap.putAll(answerServer.searchExceptionInAnswer());
