@@ -35,8 +35,7 @@ public class QuestionTagImpl extends ServiceImpl<QuestionTagMapper, QuestionTag>
 
     @Override
     public List<String> searchTopicByQuestionId(int questionId) {
-        return baseMapper.selectQuestionTags().stream()
-                .filter(questionTag -> Objects.equals(questionTag.getQuestionId(), questionId))
+        return baseMapper.selectQuestionTagsWithQuestionId(questionId).stream()
                 .map(a -> a.getTag().getTagName())
                 .toList();
     }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -58,12 +59,11 @@ public class UserEngagementController {
 
         System.out.println("questionIdCountMap get over");
         // 记录结果--标签
-        ConcurrentHashMap<String, Long> highQualityTopic = new ConcurrentHashMap<>();
+        Map<String, Long> highQualityTopic = new ConcurrentHashMap<>();
         questionIdCountMap.entrySet().parallelStream().forEach(entry -> {
             List<String> topics = questionTagServer.searchTopicByQuestionId(entry.getKey());
             Long times = entry.getValue();
             for (String topic : topics) {
-//                if (topic == null) continue;
                 highQualityTopic.compute(topic,
                         (key, value) -> (value == null) ? times : value + times);
             }

@@ -55,6 +55,6 @@ public class testTag {
 
     @Test
     public void testSelect() {
-        System.out.println(answerQualityController.getReputationInfluenceQuality());
+        System.out.println(userEngagementController.getHighQuality(10));
     }
 }
