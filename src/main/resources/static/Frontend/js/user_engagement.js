@@ -15,10 +15,13 @@ function echarts_2(chart) {
 
     // 初始化图表选项
     function updateChart(numFields) {
-
+        // 显示加载动画
+        document.querySelector('.loading').style.display = 'block';
         fetch('http://localhost:8080/UserEngagement/getHighQualityTopic?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
             .then(data_get => {
+                // 显示加载动画
+                document.querySelector('.loading').style.display = 'none';
                 // 转换数据格式
                 const yAxisData = data_get.map(item => Object.keys(item)[0]); // 提取字段名
                 const whiteBoxData = data_get.map(item => Number(Object.values(item)[0])); // 转换为数字
@@ -136,8 +139,8 @@ function echarts_2(chart) {
         const topN = document.getElementById('topN-input').value;
 
         // 检查输入是否合法
-        if (topN === '' || isNaN(topN) || topN <= 0) {
-            alert('请输入一个有效的正整数！');
+        if (topN === '' || isNaN(topN) || topN <= 0 || topN >= 25) {
+            alert('请输入一个有效的小于25的正整数！');
             return;
         }
         updateChart(topN);
@@ -151,9 +154,13 @@ function echarts_3(chart) {
 
     // 初始化图表选项
     function updateChart(numFields) {
+        // 显示加载动画
+        document.querySelector('.loading').style.display = 'block';
         fetch('http://localhost:8080/UserEngagement/getHighQualityTopic?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
             .then(data_get => {
+                // 显示加载动画
+                document.querySelector('.loading').style.display = 'none';
                 // 转换数据格式
                 const yAxisData = data_get.map(item => Number(Object.values(item)[0])); // 转换为数字（即 Y 轴数据）
                 const xAxisData = data_get.map(item => Object.keys(item)[0]); // 提取字段名（即 X 轴标签）
@@ -260,8 +267,8 @@ function echarts_3(chart) {
         const topN = document.getElementById('topN-input').value;
 
         // 检查输入是否合法
-        if (topN === '' || isNaN(topN) || topN <= 0) {
-            alert('请输入一个有效的正整数！');
+        if (topN === '' || isNaN(topN) || topN <= 0 || topN >= 25) {
+            alert('请输入一个有效的小于25的正整数！');
             return;
         }
         updateChart(topN);
@@ -274,10 +281,13 @@ function echarts_5(chart) {
     // 初始化图表选项
     function updateChart(numFields) {
         // const data = allFields[numFields];
-
+        // 显示加载动画
+        document.querySelector('.loading').style.display = 'block';
         fetch('http://localhost:8080/UserEngagement/getHighQualityTopic?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
             .then(data_get => {
+                // 显示加载动画
+                document.querySelector('.loading').style.display = 'none';
                 // 转换数据格式
                 const yAxisData = data_get.map(item => Object.keys(item)[0]); // 提取字段名
                 const whiteBoxData = data_get.map(item => Number(Object.values(item)[0])); // 转换为数字
@@ -319,7 +329,6 @@ function echarts_5(chart) {
                     "yAxis": [
                         {
                             "type": "value",
-                            "name": "单位1",
                             splitLine: {show: false},
                             axisTick: {show: false},
                             "axisLabel": {
@@ -332,7 +341,6 @@ function echarts_5(chart) {
                         },
                         {
                             "type": "value",
-                            "name": "单位2",
                             "show": true,
                             axisTick: {show: false},
                             "axisLabel": {
@@ -403,8 +411,8 @@ function echarts_5(chart) {
         const topN = document.getElementById('topN-input').value;
 
         // 检查输入是否合法
-        if (topN === '' || isNaN(topN) || topN <= 0) {
-            alert('请输入一个有效的正整数！');
+        if (topN === '' || isNaN(topN) || topN <= 0 || topN >= 25) {
+            alert('请输入一个有效的小于25的正整数！');
             return;
         }
         updateChart(topN);
@@ -436,10 +444,13 @@ function echarts_4(chart) {
 
     // 初始化图表选项
     function updateChart(numFields) {
-
+        // 显示加载动画
+        document.querySelector('.loading').style.display = 'block';
         fetch('http://localhost:8080/UserEngagement/getHighQualityTopic?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
             .then(data_get => {
+                // 显示加载动画
+                document.querySelector('.loading').style.display = 'none';
                 // 转换数据格式
                 const yAxisData = data_get.map(item => Object.keys(item)[0]); // 提取字段名
                 const whiteBoxData = data_get.map(item => Number(Object.values(item)[0])); // 转换为数字
@@ -558,8 +569,8 @@ function echarts_4(chart) {
         const topN = document.getElementById('topN-input').value;
 
         // 检查输入是否合法
-        if (topN === '' || isNaN(topN) || topN <= 0) {
-            alert('请输入一个有效的正整数！');
+        if (topN === '' || isNaN(topN) || topN <= 0 || topN >= 25) {
+            alert('请输入一个有效的小于25的正整数！');
             return;
         }
         updateChart(topN);
@@ -592,10 +603,13 @@ function echarts_6(chart) {
     // 初始化图表选项
     function updateChart(numFields) {
         // const data = allFields[numFields];
-
+        // 显示加载动画
+        document.querySelector('.loading').style.display = 'block';
         fetch('http://localhost:8080/UserEngagement/getHighQualityTopic?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
             .then(data_get => {
+                // 显示加载动画
+                document.querySelector('.loading').style.display = 'none';
                 // 转换数据格式
                 const pieData = data_get.map(item => {
                     const key = Object.keys(item)[0]; // 获取对象的键名（如 'string'）
@@ -698,8 +712,8 @@ function echarts_6(chart) {
         const topN = document.getElementById('topN-input').value;
 
         // 检查输入是否合法
-        if (topN === '' || isNaN(topN) || topN <= 0) {
-            alert('请输入一个有效的正整数！');
+        if (topN === '' || isNaN(topN) || topN <= 0 || topN >= 25) {
+            alert('请输入一个有效的小于25的正整数！');
             return;
         }
         updateChart(topN);

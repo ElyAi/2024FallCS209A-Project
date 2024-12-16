@@ -86,7 +86,6 @@
 </div>
 <div class="button-group">
     <button onclick="showChart('echarts2')">2类折线图</button>
-    <button onclick="showChart('echarts3')">条形图</button>
     <button onclick="showChart('echarts4')">子弹图</button>
     <button onclick="showChart('echarts5')">3类折线图</button>
     <button onclick="showChart('echarts6')">饼状图</button>
@@ -95,17 +94,17 @@
 
 <!-- 添加下拉框 -->
 <div class="dropdown">
-    <label for="field-select">Top N = </label>
+    <label for="field-select">Factor = </label>
     <select id="field-select">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
+        <option value="Time">Time</option>
+        <option value="Reputation">Reputation</option>
+        <option value="BodyLength">BodyLength</option>
     </select>
 </div>
 
 <!-- 动态图表显示区域 -->
 <div class="boxall" id="dynamicBox" style="height: 500px;">
-    <div class="alltitle">top N topics</div>
+    <div class="alltitle">Factors</div>
     <div class="boxnav" id="chartContainer" style="height: 100%; width: 100%;"></div>
 </div>
 
