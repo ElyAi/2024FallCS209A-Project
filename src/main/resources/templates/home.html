@@ -1,18 +1,18 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Java Topic Data Analysis</title>
-    <script type="text/javascript" src="../js/jquery.js"></script>
-    <link rel="stylesheet" href="../css/java_topic.css">
+    <title>CS209 Stack Overflow Data Analysis Main Page</title>
+    <script type="text/javascript" src="../static/Frontend/js/jquery.js"></script>
+    <link rel="stylesheet" href="../static/Frontend/css/home.css">
 </head>
 <body>
 <div class="loading">
-    <div class="loadbox"><img src="../images/loading.gif"> 页面加载中...</div>
+    <div class="loadbox"><img src="../static/Frontend/images/loading.gif"> 页面加载中...</div>
 </div>
 <div class="head">
-    <h1><a href="https://sustech.edu.cn/">Java Topic Data Analysis</a></h1>
-    <div class="time" id="showTime">2019/12/05 16:16:54</div>
+    <h1><a href="https://sustech.edu.cn/">CS209 Stack Overflow Data Analysis Main Page</a></h1>
+    <div class="time" id="showTime">2024/12/05 16:16:54</div>
     <div class="location" id="showLocation">正在获取位置信息...</div>
     <script>
         // 时间显示
@@ -85,32 +85,13 @@
     </script>
 </div>
 <div class="button-group">
-    <button onclick="showChart('echarts1')">1类折线图</button>
-    <button onclick="showChart('echarts2')">2类折线图</button>
-    <button onclick="showChart('echarts3')">条形图</button>
-    <button onclick="showChart('echarts4')">子弹图</button>
-    <button onclick="showChart('echarts5')">3类折线图</button>
-    <button onclick="showChart('echarts6')">饼状图</button>
-    <button onclick="window.location.href='home.html';">返回主页面</button>
+    <button onclick="window.location.href='../static/Frontend/html/java_topic.html';">Java Topics</button>
+    <button onclick="window.location.href='../static/Frontend/html/user_engagement.html';">User Engagement</button>
+    <button onclick="window.location.href='../static/Frontend/html/common_mistake.html';">Common Mistakes</button>
+    <button onclick="window.location.href='../static/Frontend/html/answer_quality.html';">Answer Quality</button>
 </div>
 
-<!-- 添加下拉框 -->
-<div class="dropdown">
-    <label for="field-select">Top N = </label>
-    <select id="field-select">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-    </select>
-</div>
+<script language="JavaScript" src="../static/Frontend/js/home.js"></script>
 
-<!-- 动态图表显示区域 -->
-<div class="boxall" id="dynamicBox" style="height: 500px;">
-    <div class="alltitle">top N topics</div>
-    <div class="boxnav" id="chartContainer" style="height: 100%; width: 100%;"></div>
-</div>
-
-<script type="text/javascript" src="../js/echarts.min.js"></script>
-<script language="JavaScript" src="../js/java_topic.js"></script>
 </body>
 </html>

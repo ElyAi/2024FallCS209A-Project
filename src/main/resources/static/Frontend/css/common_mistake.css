@@ -242,8 +242,8 @@ html, body {
 
 /* 设置下拉框的外观 */
 .dropdown {
-    margin-bottom: 20px;
     font-size: 16px;
+    margin: 10px;
 }
 
 #field-select {
@@ -251,5 +251,28 @@ html, body {
     font-size: 16px;
 }
 
+.input-container {
+    margin: 10px;
+    font-size: 16px;
+}
+
+#topN-input {
+    width: 80px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+#query-btn {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#query-btn:hover {
+    background-color: #45a049;
+}
 
 

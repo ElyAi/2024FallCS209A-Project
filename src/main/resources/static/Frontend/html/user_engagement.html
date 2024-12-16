@@ -85,23 +85,19 @@
     </script>
 </div>
 <div class="button-group">
-    <button onclick="showChart('echarts1')">1类折线图</button>
-    <button onclick="showChart('echarts2')">2类折线图</button>
+    <button onclick="showChart('echarts2')">1类折线图</button>
     <button onclick="showChart('echarts3')">条形图</button>
     <button onclick="showChart('echarts4')">子弹图</button>
-    <button onclick="showChart('echarts5')">3类折线图</button>
+    <button onclick="showChart('echarts5')">2类折线图</button>
     <button onclick="showChart('echarts6')">饼状图</button>
     <button onclick="window.location.href='home.html';">返回主页面</button>
 </div>
 
-<!-- 添加下拉框 -->
-<div class="dropdown">
-    <label for="field-select">Top N = </label>
-    <select id="field-select">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-    </select>
+<!-- 输入框和查询按钮 -->
+<div class="input-container">
+    <label for="topN-input">Top N = </label>
+    <input type="number" id="topN-input" min="1" max="30" placeholder="input" />
+    <button id="query-btn">query</button>
 </div>
 
 <!-- 动态图表显示区域 -->
