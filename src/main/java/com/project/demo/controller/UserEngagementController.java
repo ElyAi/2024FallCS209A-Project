@@ -39,9 +39,6 @@ public class UserEngagementController {
         if (topN <= 0) {
             throw new BadRequestException("传入topN不能小于或等于0");
         }
-        if (topN > 500) {
-            throw new BadRequestException("传入topN不能大于500");
-        }
 
         List<Integer> userIdList = userServer.getHighReputationUsersWithAvg();
         System.out.println("userIdList get over");

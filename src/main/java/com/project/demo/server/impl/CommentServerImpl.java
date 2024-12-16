@@ -43,7 +43,7 @@ public class CommentServerImpl extends ServiceImpl<CommentMapper, Comment> imple
         comments.forEach(comment -> {
             Matcher matcher = pattern.matcher(comment.getBody());
             while (matcher.find()) {
-                String errorType = matcher.group();
+                String errorType = matcher.group().toLowerCase();
                 errorMap.put(errorType, errorMap.getOrDefault(errorType, 0) + 1);
             }
         });
@@ -60,7 +60,7 @@ public class CommentServerImpl extends ServiceImpl<CommentMapper, Comment> imple
         comments.forEach(comment -> {
             Matcher matcher = pattern.matcher(comment.getBody());
             while (matcher.find()) {
-                String errorType = matcher.group();
+                String errorType = matcher.group().toLowerCase();
                 exceptionMap.put(errorType, exceptionMap.getOrDefault(errorType, 0) + 1);
             }
         });

@@ -24,5 +24,4 @@ public interface QuestionTagMapper extends BaseMapper<QuestionTag> {
             @Result(column = "tag_id", property = "tag", one = @One(select = "com.project.demo.mapper.TagMapper.selectById"))
     })
     List<QuestionTag> selectQuestionTagsWithQuestionId(int questionId);
-
 }

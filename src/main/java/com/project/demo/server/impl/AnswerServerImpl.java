@@ -60,7 +60,7 @@ public class AnswerServerImpl extends ServiceImpl<AnswerMapper, Answer> implemen
         answers.forEach(answer -> {
             Matcher matcher = pattern.matcher(answer.getBody());
             while (matcher.find()) {
-                String errorType = matcher.group();
+                String errorType = matcher.group().toLowerCase();
                 errorMap.put(errorType, errorMap.getOrDefault(errorType, 0) + 1);
             }
         });
@@ -77,7 +77,7 @@ public class AnswerServerImpl extends ServiceImpl<AnswerMapper, Answer> implemen
         answers.forEach(answer -> {
             Matcher matcher = pattern.matcher(answer.getBody());
             while (matcher.find()) {
-                String errorType = matcher.group();
+                String errorType = matcher.group().toLowerCase();
                 exceptionMap.put(errorType, exceptionMap.getOrDefault(errorType, 0) + 1);
             }
         });

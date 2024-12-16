@@ -27,7 +27,7 @@ public class QuestionServerImpl extends ServiceImpl<QuestionMapper, Question> im
         questions.forEach(question -> {
             Matcher matcher = pattern.matcher(question.getBody());
             while (matcher.find()) {
-                String errorType = matcher.group();
+                String errorType = matcher.group().toLowerCase();
                 errorMap.put(errorType, errorMap.getOrDefault(errorType, 0) + 1);
             }
         });
@@ -44,7 +44,7 @@ public class QuestionServerImpl extends ServiceImpl<QuestionMapper, Question> im
         questions.forEach(question -> {
             Matcher matcher = pattern.matcher(question.getBody());
             while (matcher.find()) {
-                String errorType = matcher.group();
+                String errorType = matcher.group().toLowerCase();
                 exceptionMap.put(errorType, exceptionMap.getOrDefault(errorType, 0) + 1);
             }
         });

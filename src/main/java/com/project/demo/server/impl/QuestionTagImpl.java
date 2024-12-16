@@ -39,4 +39,32 @@ public class QuestionTagImpl extends ServiceImpl<QuestionTagMapper, QuestionTag>
                 .map(a -> a.getTag().getTagName())
                 .toList();
     }
+
+    @Override
+    public Map<String, Integer> searchErrorTopicMap() {
+        Map<String, Integer> errorTopicMap = new HashMap<>();
+        List<QuestionTag> questionTags = baseMapper.selectQuestionTags();
+        for (QuestionTag questionTag : questionTags) {
+            if (questionTag.getTag().getTagName().contains("error")) {
+                if(questionTag.getTag().getTagName().equals("error-handling")) continue;
+                errorTopicMap.put(questionTag.getTag().getTagName(), errorTopicMap.getOrDefault(questionTag.getTag().getTagName(), 0) + 1);
+            }
+        }
+        return errorTopicMap;
+    }
+
+    @Override
+    public Map<String, Integer> searchExceptionTopicMap() {
+        Map<String, Integer> exceptionTopicMap = new HashMap<>();
+        List<QuestionTag> questionTags = baseMapper.selectQuestionTags();
+        for (QuestionTag questionTag : questionTags) {
+            if (questionTag.getTag().getTagName().contains("exception")) {
+                if(questionTag.getTag().getTagName().equals("exception")) continue;
+                if(questionTag.getTag().getTagName().contains("-")) continue;
+
+                exceptionTopicMap.put(questionTag.getTag().getTagName(), exceptionTopicMap.getOrDefault(questionTag.getTag().getTagName(), 0) + 1);
+            }
+        }
+        return exceptionTopicMap;
+    }
 }

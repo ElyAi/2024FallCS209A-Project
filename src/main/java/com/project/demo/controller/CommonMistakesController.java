@@ -4,6 +4,7 @@ import com.project.demo.exception.*;
 import com.project.demo.server.AnswerServer;
 import com.project.demo.server.CommentServer;
 import com.project.demo.server.QuestionServer;
+import com.project.demo.server.QuestionTagServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,14 +18,17 @@ public class CommonMistakesController {
     private final QuestionServer questionServer;
     private final AnswerServer answerServer;
     private final CommentServer commentServer;
+    private final QuestionTagServer questionTagServer;
 
     @Autowired
     public CommonMistakesController(QuestionServer questionServer,
                                     AnswerServer answerServer,
-                                    CommentServer commentServer) {
+                                    CommentServer commentServer,
+                                    QuestionTagServer questionTagServer) {
         this.questionServer = questionServer;
         this.answerServer = answerServer;
         this.commentServer = commentServer;
+        this.questionTagServer = questionTagServer;
     }
 
     @GetMapping("/getTopNError")
@@ -32,13 +36,12 @@ public class CommonMistakesController {
         if (topN <= 0) {
             throw new BadRequestException("传入topN不能小于或等于0");
         }
-        if (topN > 500) {
-            throw new BadRequestException("传入topN不能大于500");
-        }
         Map<String, Integer> errorMap = new HashMap<String, Integer>();
         errorMap.putAll(questionServer.searchErrorInQuestion());
         errorMap.putAll(answerServer.searchErrorInAnswer());
         errorMap.putAll(commentServer.searchErrorInComment());
+        errorMap.putAll(questionTagServer.searchErrorTopicMap());
+
 
         return errorMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -51,13 +54,12 @@ public class CommonMistakesController {
         if (topN <= 0) {
             throw new BadRequestException("传入topN不能小于或等于0");
         }
-        if (topN > 500) {
-            throw new BadRequestException("传入topN不能大于500");
-        }
         Map<String, Integer> exceptionMap = new HashMap<String, Integer>();
         exceptionMap.putAll(questionServer.searchExceptionInQuestion());
         exceptionMap.putAll(answerServer.searchExceptionInAnswer());
         exceptionMap.putAll(commentServer.searchExceptionInComment());
+        exceptionMap.putAll(questionTagServer.searchExceptionTopicMap());
+
 
         return exceptionMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -67,7 +69,7 @@ public class CommonMistakesController {
 
     @GetMapping("/getSpecificError")
     public Integer getSpecificError(String errorName) {
-        if (errorName == null){
+        if (errorName == null || errorName.trim().isEmpty()) {
             throw new BadRequestException("errorName不能为空");
         }
 
@@ -75,29 +77,31 @@ public class CommonMistakesController {
         errorMap.putAll(questionServer.searchErrorInQuestion());
         errorMap.putAll(answerServer.searchErrorInAnswer());
         errorMap.putAll(commentServer.searchErrorInComment());
+        errorMap.putAll(questionTagServer.searchErrorTopicMap());
 
         if (!errorMap.containsKey(errorName)) {
             throw new ResourceNotFoundException(errorName + "不存在");
         }
 
-        return errorMap.get(errorName);
+        return errorMap.get(errorName.toLowerCase().trim());
     }
 
     @GetMapping("/getSpecificException")
     public Integer getSpecificException(String exceptionName) {
-        if (exceptionName == null){
+        if (exceptionName == null || exceptionName.trim().isEmpty()) {
             throw new BadRequestException("exceptionName不能为空");
         }
         Map<String, Integer> exceptionMap = new HashMap<String, Integer>();
         exceptionMap.putAll(questionServer.searchExceptionInQuestion());
         exceptionMap.putAll(answerServer.searchExceptionInAnswer());
         exceptionMap.putAll(commentServer.searchExceptionInComment());
+        exceptionMap.putAll(questionTagServer.searchExceptionTopicMap());
 
         if (!exceptionMap.containsKey(exceptionName)) {
             throw new ResourceNotFoundException(exceptionName + "不存在");
         }
 
-        return exceptionMap.get(exceptionName);
+        return exceptionMap.get(exceptionName.toLowerCase().trim());
     }
 
 }

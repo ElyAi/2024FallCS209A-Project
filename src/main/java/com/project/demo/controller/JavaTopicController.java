@@ -27,9 +27,7 @@ public class JavaTopicController {
         if (topN <= 0) {
             throw new BadRequestException("传入topN不能小于或等于0");
         }
-        if (topN > 500) {
-            throw new BadRequestException("传入topN不能大于500");
-        }
+
         Map<String, Integer> map = questionTagServer.searchTopicMap();
         return map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -39,9 +37,10 @@ public class JavaTopicController {
 
     @GetMapping("/getSpecificTopic")
     public int getSpecificTopic(String topicName) {
-        if (topicName == null){
+        if (topicName == null || topicName.trim().isEmpty()) {
             throw new BadRequestException("topicName不能为空");
         }
+        topicName = topicName.toLowerCase().trim();
         Map<String, Integer> map = questionTagServer.searchTopicMap();
         if (!map.containsKey(topicName)){
             throw new ResourceNotFoundException(topicName + "不存在");

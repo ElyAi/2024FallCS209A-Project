@@ -13,4 +13,8 @@ public interface QuestionTagServer extends IService<QuestionTag> {
      public Map<String, Integer> searchTopicMap();
 
      public List<String> searchTopicByQuestionId(int questionId);
+
+     public Map<String, Integer> searchErrorTopicMap();
+
+     public Map<String, Integer> searchExceptionTopicMap();
 }
