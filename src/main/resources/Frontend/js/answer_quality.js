@@ -1,4 +1,4 @@
-﻿$(window).on('load', function () {
+$(window).on('load', function () {
     $(".loading").fadeOut(); // 页面加载完成后隐藏加载框
 });
 
@@ -621,116 +621,126 @@ function echarts_4(chart) {
 
     // 初始化图表选项
     function updateChart(numFields) {
-        fetch('http://localhost:8080/JavaTopics/getTopNTopic?topN=' + numFields)
+        const data = allFields[numFields];
+
+        fetch('http://localhost:8080/UserEngagement/getHighQualityTopic?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
-            .then(data => {
-                console.log(data);  // 处理返回的数据
+            .then(data_get => {
+                // 转换数据格式
+                const yAxisData = data_get.map(item => Object.keys(item)[0]); // 提取字段名
+                const whiteBoxData = data_get.map(item => Number(Object.values(item)[0])); // 转换为数字
+                const seriesData = whiteBoxData.map(value => value / 10); // 计算 seriesData
+
+                // 更新现有数据对象
+                data.yAxisData = yAxisData.reverse();
+                data.seriesData = seriesData.reverse();
+                data.whiteBoxData = whiteBoxData.reverse();
+
+                console.log(data);  // 检查转换后的数据格式
+
+                // 更新图表选项
+                const option = {
+                    grid: {
+                        left: '2%',
+                        top: '1%',
+                        right: '5%',
+                        bottom: '0%',
+                        containLabel: true
+                    },
+                    xAxis: [{
+                        show: false,
+                    }],
+                    yAxis: [
+                        {
+                            axisLine: {                   // 显示轴线
+                                lineStyle: {
+                                    color: '#ccc'
+                                }
+                            },
+                            axisTick: { show: false },
+                            axisLabel: {
+                                textStyle: {
+                                    color: 'rgba(255,255,255,.6)',
+                                    fontSize: 14,
+                                }
+                            },
+                            data: data.yAxisData
+                        },
+                        {
+                            name: 'Number of occurrences',
+                            nameLocation: 'middle',
+                            nameGap: 30,
+                            nameTextStyle: {
+                                color: 'rgba(255,255,255,.6)',
+                                fontSize: 16,
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#ccc'
+                                }
+                            },
+                            data: data.whiteBoxData
+                        }
+                    ],
+                    series: [{
+                        name: '条',
+                        type: 'bar',
+                        yAxisIndex: 0,
+                        data: data.seriesData,
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'right',
+                                formatter: function (param) {
+                                    return param.value + '%';
+                                },
+                                textStyle: {
+                                    color: 'rgba(255,255,255,.8)',
+                                    fontSize: '12',
+                                }
+                            }
+                        },
+                        barWidth: 15,
+                        itemStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [{
+                                    offset: 0,
+                                    color: '#03c893'
+                                },
+                                    {
+                                        offset: 1,
+                                        color: '#0091ff'
+                                    }
+                                ]),
+                                barBorderRadius: 15,
+                            }
+                        },
+                        z: 2
+                    }, {
+                        name: '白框',
+                        type: 'bar',
+                        yAxisIndex: 1,
+                        barGap: '-100%',
+                        data: data.whiteBoxData,
+                        barWidth: 15,
+                        itemStyle: {
+                            normal: {
+                                color: 'rgba(0,0,0,.2)',
+                                barBorderRadius: 15,
+                            }
+                        },
+                        z: 1
+                    }]
+                };
+
+                // 更新图表
+                chart.setOption(option);
             })
             .catch(error => {
                 console.error('Error:', error);  // 错误处理
             });
-
-        const data = allFields[numFields];
-
-        const option = {
-            grid: {
-                left: '2%',
-                top: '1%',
-                right: '5%',
-                bottom: '0%',
-                containLabel: true
-            },
-            xAxis: [{
-                show: false,
-            }],
-            yAxis: [{
-                axisTick: 'none',
-                axisLine: 'none',
-                offset: '7',
-                axisLabel: {
-                    textStyle: {
-                        color: 'rgba(255,255,255,.6)',
-                        fontSize: '14',
-                    }
-                },
-                data: data.yAxisData
-            }, {
-                axisTick: 'none',
-                axisLine: 'none',
-                axisLabel: {
-                    textStyle: {
-                        color: 'rgba(255,255,255,.6)',
-                        fontSize: '14',
-                    }
-                },
-                data: data.whiteBoxData
-            }, {
-                name: '单位：件',
-                nameGap: '50',
-                nameTextStyle: {
-                    color: 'rgba(255,255,255,.6)',
-                    fontSize: '16',
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: 'rgba(0,0,0,0)'
-                    }
-                },
-                data: [],
-            }],
-            series: [{
-                name: '条',
-                type: 'bar',
-                yAxisIndex: 0,
-                data: data.seriesData,
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'right',
-                        formatter: function (param) {
-                            return param.value + '%';
-                        },
-                        textStyle: {
-                            color: 'rgba(255,255,255,.8)',
-                            fontSize: '12',
-                        }
-                    }
-                },
-                barWidth: 15,
-                itemStyle: {
-                    normal: {
-                        color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [{
-                            offset: 0,
-                            color: '#03c893'
-                        },
-                            {
-                                offset: 1,
-                                color: '#0091ff'
-                            }
-                        ]),
-                        barBorderRadius: 15,
-                    }
-                },
-                z: 2
-            }, {
-                name: '白框',
-                type: 'bar',
-                yAxisIndex: 1,
-                barGap: '-100%',
-                data: data.whiteBoxData,
-                barWidth: 15,
-                itemStyle: {
-                    normal: {
-                        color: 'rgba(0,0,0,.2)',
-                        barBorderRadius: 15,
-                    }
-                },
-                z: 1
-            }]
-        };
-
-        chart.setOption(option);
     }
+
 
     // 初始化时设置为5个字段
     updateChart(5);
