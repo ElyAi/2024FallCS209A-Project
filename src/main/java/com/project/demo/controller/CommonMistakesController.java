@@ -79,11 +79,12 @@ public class CommonMistakesController {
         errorMap.putAll(commentServer.searchErrorInComment());
         errorMap.putAll(questionTagServer.searchErrorTopicMap());
 
+        errorName = errorName.toLowerCase().trim();
         if (!errorMap.containsKey(errorName)) {
             throw new ResourceNotFoundException(errorName + "不存在");
         }
 
-        return errorMap.get(errorName.toLowerCase().trim());
+        return errorMap.get(errorName);
     }
 
     @GetMapping("/getSpecificException")
@@ -97,11 +98,12 @@ public class CommonMistakesController {
         exceptionMap.putAll(commentServer.searchExceptionInComment());
         exceptionMap.putAll(questionTagServer.searchExceptionTopicMap());
 
+        exceptionName = exceptionName.toLowerCase().trim();
         if (!exceptionMap.containsKey(exceptionName)) {
             throw new ResourceNotFoundException(exceptionName + "不存在");
         }
 
-        return exceptionMap.get(exceptionName.toLowerCase().trim());
+        return exceptionMap.get(exceptionName);
     }
 
 }
