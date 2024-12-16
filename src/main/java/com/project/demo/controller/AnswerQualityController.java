@@ -1,6 +1,7 @@
 package com.project.demo.controller;
 
 import com.project.demo.entity.Answer;
+import com.project.demo.exception.BadRequestException;
 import com.project.demo.mapper.AnswerMapper;
 import com.project.demo.mapper.UserMapper;
 import com.project.demo.server.AnswerServer;
@@ -27,6 +28,53 @@ public class AnswerQualityController {
         this.answerServer = answerServer;
         this.answerMapper = answerMapper;
         this.userMapper = userMapper;
+    }
+
+    @GetMapping("/getTimeInfluenceQualityWithTopK")
+    public Double getTimeInfluenceQualityWithTopK(int k) {
+        if (k <= 0){
+            throw new BadRequestException("k应该大于0");
+        }
+        // 获取answer高分标准
+        double highScore = answerMapper.getKRankScore((int) (answerMapper.selectCount(null) / 100));
+        // 将没有被接受也没有高分回答的question从有效集里剔除
+        List<Answer> validAnswersList = answerServer.getValidAnswer();
+        // 获得所有被接收的answerId
+        List<Integer> acceptedAnswersList = answerMapper.selectAcceptedAnswer()
+                .stream().map(Answer::getAnswerId).toList();
+        // 获得所有高分answerId
+        List<Integer> highScoreAnswersList = answerMapper.selectHighQualityAnswer(highScore)
+                .stream().map(Answer::getAnswerId).toList();
+
+        // 合并为高质量answerId集合
+        List<Integer> highQualityAnswersList = Stream.of(acceptedAnswersList, highScoreAnswersList)
+                .flatMap(Collection::stream)
+                .distinct()
+                .toList();
+
+        List<Integer> topKEarliestAnswerList = validAnswersList.stream()
+                .collect(Collectors.groupingBy(
+                        Answer::getQuestionId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                answers -> {
+                                    return answers.stream()
+                                            .sorted(Comparator.comparing(Answer::getCreationDate))
+                                            .limit(k)
+                                            .map(Answer::getAnswerId)
+                                            .collect(Collectors.toList());
+                                }
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .flatMap(entry -> entry.getValue().stream()) // 将Map的值扁平化为一个流
+                .toList(); // 收集为List
+
+        long duplicateCount = highQualityAnswersList.stream()
+                .filter(topKEarliestAnswerList::contains)
+                .count();
+        return (double) duplicateCount / highQualityAnswersList.size();
     }
 
     @GetMapping("/getTimeInfluenceQuality")
@@ -116,7 +164,60 @@ public class AnswerQualityController {
         result = (double) duplicateCount / highQualityAnswersList.size();
         resultMap.put("Top3", result);
 
+        List<Integer> top5EarliestAnswerList = validAnswersList.stream()
+                .collect(Collectors.groupingBy(
+                        Answer::getQuestionId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                answers -> {
+                                    return answers.stream()
+                                            .sorted(Comparator.comparing(Answer::getCreationDate))
+                                            .limit(5)
+                                            .map(Answer::getAnswerId)
+                                            .collect(Collectors.toList());
+                                }
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .flatMap(entry -> entry.getValue().stream()) // 将Map的值扁平化为一个流
+                .toList(); // 收集为List
+
+        duplicateCount = highQualityAnswersList.stream()
+                .filter(top5EarliestAnswerList::contains)
+                .count();
+        result = (double) duplicateCount / highQualityAnswersList.size();
+        resultMap.put("Top5", result);
+
         return resultMap.entrySet().stream().toList();
+    }
+
+    @GetMapping("/getReputationInfluenceQualityWithTopProportion")
+    public Double getReputationInfluenceQualityWithTopProportion(double proportion) {
+        if (proportion <= 0 || proportion >= 100){
+            throw new BadRequestException("proportion应该在0-100之间");
+        }
+        // 获取answer高分标准
+        double highScore = answerMapper.getKRankScore((int) (answerMapper.selectCount(null) / 100));
+        List<Answer> highScoreAnswersList = answerMapper.selectHighQualityAnswer(highScore);
+        List<Answer> acceptedAnswersList = answerMapper.selectAcceptedAnswer();
+        // 合并处理
+        List<Answer> validAnswersList = Stream.of(highScoreAnswersList, acceptedAnswersList)
+                .flatMap(Collection::stream)
+                .distinct()
+                .toList();
+        validAnswersList = validAnswersList.stream().filter(answer -> answer.getOwnerId() != null).toList();
+        long totalUserCount = userMapper.selectCount(null);
+        // 前 proportion%
+        double highestReputation = userMapper.getKRankReputation((int) (totalUserCount * proportion / 100));
+
+        List<Answer> reputationAnswerList = validAnswersList.parallelStream()
+                .filter(answer -> {
+                    int reputation = userMapper.getReputationByUserId(answer.getOwnerId());
+                    return reputation >= highestReputation;
+                }).toList();
+
+        return (double) reputationAnswerList.size() / validAnswersList.size();
     }
 
     @GetMapping("/getReputationInfluenceQuality")
@@ -134,10 +235,12 @@ public class AnswerQualityController {
         long totalUserCount = userMapper.selectCount(null);
         // 前 1%
         double highestReputation = userMapper.getKRankReputation((int) (totalUserCount / 100));
+        // 前 5%
+        double higherReputation = userMapper.getKRankReputation((int) (totalUserCount / 20));
         // 前 10%
-        double higherReputation = userMapper.getKRankReputation((int) (totalUserCount / 10));
+        double normalReputation = userMapper.getKRankReputation((int) (totalUserCount / 10));
         // 前 50%
-        double normalReputation = userMapper.getKRankReputation((int) (totalUserCount / 2));
+        double halfReputation = userMapper.getKRankReputation((int) (totalUserCount / 2));
 
         Map<String, Double> reputationMap = new HashMap<>();
 
@@ -155,7 +258,7 @@ public class AnswerQualityController {
                     return reputation >= higherReputation;
                 }).toList();
         percentage = (double) reputationAnswerList.size() / validAnswersList.size();
-        reputationMap.put("0.10", percentage);
+        reputationMap.put("0.05", percentage);
 
         reputationAnswerList = validAnswersList.parallelStream()
                 .filter(answer -> {
@@ -163,9 +266,66 @@ public class AnswerQualityController {
                     return reputation >= normalReputation;
                 }).toList();
         percentage = (double) reputationAnswerList.size() / validAnswersList.size();
+        reputationMap.put("0.10", percentage);
+
+        reputationAnswerList = validAnswersList.parallelStream()
+                .filter(answer -> {
+                    int reputation = userMapper.getReputationByUserId(answer.getOwnerId());
+                    return reputation >= halfReputation;
+                }).toList();
+        percentage = (double) reputationAnswerList.size() / validAnswersList.size();
         reputationMap.put("0.50", percentage);
 
         return reputationMap.entrySet().stream().toList();
+    }
+
+    @GetMapping("/getBodyLengthInfluenceQualityWithTopK")
+    public Double getBodyLengthInfluenceQualityWithTopK(int k) {
+        if (k <= 0){
+            throw new BadRequestException("k应该大于0");
+        }
+        // 获取answer高分标准
+        double highScore = answerMapper.getKRankScore((int) (answerMapper.selectCount(null) / 100));
+        // 将没有被接受也没有高分回答的question从有效集里剔除
+        List<Answer> validAnswersList = answerServer.getValidAnswer();
+        // 获得所有被接收的answerId
+        List<Integer> acceptedAnswersList = answerMapper.selectAcceptedAnswer()
+                .stream().map(Answer::getAnswerId).toList();
+        // 获得所有高分answerId
+        List<Integer> highScoreAnswersList = answerMapper.selectHighQualityAnswer(highScore)
+                .stream().map(Answer::getAnswerId).toList();
+
+        // 合并为高质量answerId集合
+        List<Integer> highQualityAnswersList = Stream.of(acceptedAnswersList, highScoreAnswersList)
+                .flatMap(Collection::stream)
+                .distinct()
+                .toList();
+        List<Integer> topKLongestAnswerList = validAnswersList.stream()
+                .collect(Collectors.groupingBy(
+                        Answer::getQuestionId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                answers -> {
+                                    List<Answer> topKAnswers = answers.stream()
+                                            .sorted(Comparator.comparing(answer -> answer.getBody().length()))
+                                            .collect(Collectors.toList());
+                                    Collections.reverse(topKAnswers);
+                                    return topKAnswers.stream()
+                                            .map(Answer::getAnswerId)
+                                            .limit(k)
+                                            .toList();
+                                }
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .flatMap(entry -> entry.getValue().stream()) // 将Map的值扁平化为一个流
+                .toList(); // 收集为List
+
+        long duplicateCount = highQualityAnswersList.stream()
+                .filter(topKLongestAnswerList::contains)
+                .count();
+        return (double) duplicateCount / highQualityAnswersList.size();
     }
 
     @GetMapping("/getBodyLengthInfluenceQuality")
@@ -187,6 +347,7 @@ public class AnswerQualityController {
                 .distinct()
                 .toList();
 
+
         Map<String, Double> resultMap = new HashMap<>();
         List<Integer> longestAnswerList = validAnswersList.stream()
                 .collect(
@@ -206,6 +367,7 @@ public class AnswerQualityController {
         double result = (double) duplicateCount / highQualityAnswersList.size();
         resultMap.put("Top1", result);
 
+        System.out.println(validAnswersList.size() / longestAnswerList.size());
         List<Integer> top2LongestAnswerList = validAnswersList.stream()
                 .collect(Collectors.groupingBy(
                         Answer::getQuestionId,
@@ -261,6 +423,34 @@ public class AnswerQualityController {
                 .count();
         result = (double) duplicateCount / highQualityAnswersList.size();
         resultMap.put("Top3", result);
+
+        List<Integer> top5LongestAnswerList = validAnswersList.stream()
+                .collect(Collectors.groupingBy(
+                        Answer::getQuestionId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                answers -> {
+                                    List<Answer> top5Answers = answers.stream()
+                                            .sorted(Comparator.comparing(answer -> answer.getBody().length()))
+                                            .collect(Collectors.toList());
+                                    Collections.reverse(top5Answers);
+                                    return top5Answers.stream()
+                                            .map(Answer::getAnswerId)
+                                            .limit(5)
+                                            .toList();
+                                }
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .flatMap(entry -> entry.getValue().stream()) // 将Map的值扁平化为一个流
+                .toList(); // 收集为List
+
+        duplicateCount = highQualityAnswersList.stream()
+                .filter(top5LongestAnswerList::contains)
+                .count();
+        result = (double) duplicateCount / highQualityAnswersList.size();
+        resultMap.put("Top5", result);
 
         return resultMap.entrySet().stream().toList();
     }
