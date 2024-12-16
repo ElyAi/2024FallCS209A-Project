@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <title>User Engagement Data Analysis</title>
-    <script type="text/javascript" src="../js/jquery.js"></script>
-    <link rel="stylesheet" href="../css/user_engagement.css">
+    <script type="text/javascript" src="/Frontend/js/jquery.js"></script>
+    <link rel="stylesheet" href="/Frontend/css/user_engagement.css">
 </head>
 <body>
 <div class="loading">
-    <div class="loadbox"><img src="../images/loading.gif"> 页面加载中...</div>
+    <div class="loadbox"><img src="/Frontend/images/loading.gif"> 页面加载中...</div>
 </div>
 <div class="head">
     <h1><a href="https://sustech.edu.cn/">User Engagement Data Analysis</a></h1>
@@ -90,7 +90,7 @@
     <button onclick="showChart('echarts4')">子弹图</button>
     <button onclick="showChart('echarts5')">2类折线图</button>
     <button onclick="showChart('echarts6')">饼状图</button>
-    <button onclick="window.location.href='home.html';">返回主页面</button>
+    <button onclick="window.location.pathname='';">返回主页面</button>
 </div>
 
 <!-- 输入框和查询按钮 -->
@@ -106,7 +106,7 @@
     <div class="boxnav" id="chartContainer" style="height: 100%; width: 100%;"></div>
 </div>
 
-<script type="text/javascript" src="../js/echarts.min.js"></script>
-<script language="JavaScript" src="../js/user_engagement.js"></script>
+<script type="text/javascript" src="/Frontend/js/echarts.min.js"></script>
+<script language="JavaScript" src="/Frontend/js/user_engagement.js"></script>
 </body>
 </html>

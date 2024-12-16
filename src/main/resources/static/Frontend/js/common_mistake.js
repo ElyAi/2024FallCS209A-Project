@@ -420,7 +420,7 @@ function echarts_5(chart) {
 
 function echarts_4(chart) {
     // 子弹图
-    const fieldSelect = document.getElementById('field-select');
+    const fieldSelect = document.getElementById('query-btn');
     const typeSelect = document.getElementById('error-exception-select');
 
     // 初始化字段数据
@@ -444,7 +444,6 @@ function echarts_4(chart) {
 
     // 初始化图表选项
     function updateChart(numFields, typeFields) {
-        const data = allFields[numFields];
 
         fetch('http://localhost:8080/CommonMistakes/getTopN' + typeFields + '?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
@@ -454,12 +453,6 @@ function echarts_4(chart) {
                 const whiteBoxData = data_get.map(item => Number(Object.values(item)[0])); // 转换为数字
                 const seriesData = whiteBoxData.map(value => value / 10); // 计算 seriesData
 
-                // 更新现有数据对象
-                data.yAxisData = yAxisData.reverse();
-                data.seriesData = seriesData.reverse();
-                data.whiteBoxData = whiteBoxData.reverse();
-
-                console.log(data);  // 检查转换后的数据格式
 
                 // 更新图表选项
                 const option = {
@@ -487,7 +480,7 @@ function echarts_4(chart) {
                                     fontSize: 14,
                                 }
                             },
-                            data: data.yAxisData
+                            data: yAxisData
                         },
                         {
                             name: 'Number of occurrences',
@@ -502,14 +495,14 @@ function echarts_4(chart) {
                                     color: '#ccc'
                                 }
                             },
-                            data: data.whiteBoxData
+                            data: whiteBoxData
                         }
                     ],
                     series: [{
                         name: '条',
                         type: 'bar',
                         yAxisIndex: 0,
-                        data: data.seriesData,
+                        data: seriesData,
                         label: {
                             normal: {
                                 show: true,
@@ -544,7 +537,7 @@ function echarts_4(chart) {
                         type: 'bar',
                         yAxisIndex: 1,
                         barGap: '-100%',
-                        data: data.whiteBoxData,
+                        data: whiteBoxData,
                         barWidth: 15,
                         itemStyle: {
                             normal: {
@@ -585,7 +578,7 @@ function echarts_4(chart) {
 
 function echarts_6(chart) {
     // 饼状图
-    const fieldSelect = document.getElementById('field-select');
+    const fieldSelect = document.getElementById('query-btn');
     const typeSelect = document.getElementById('error-exception-select');
 
     // 初始化图表选项

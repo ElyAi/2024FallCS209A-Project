@@ -435,7 +435,6 @@ function echarts_4(chart) {
 
     // 初始化图表选项
     function updateChart(numFields) {
-        const data = allFields[numFields];
 
         fetch('http://localhost:8080/JavaTopics/getTopNTopic?topN=' + numFields)
             .then(response => response.json())  // 解析 JSON 格式的响应
@@ -444,13 +443,6 @@ function echarts_4(chart) {
                 const yAxisData = data_get.map(item => Object.keys(item)[0]); // 提取字段名
                 const whiteBoxData = data_get.map(item => Number(Object.values(item)[0])); // 转换为数字
                 const seriesData = whiteBoxData.map(value => value / 10); // 计算 seriesData
-
-                // 更新现有数据对象
-                data.yAxisData = yAxisData.reverse();
-                data.seriesData = seriesData.reverse();
-                data.whiteBoxData = whiteBoxData.reverse();
-
-                console.log(data);  // 检查转换后的数据格式
 
                 // 更新图表选项
                 const option = {
@@ -478,7 +470,7 @@ function echarts_4(chart) {
                                     fontSize: 14,
                                 }
                             },
-                            data: data.yAxisData
+                            data: yAxisData
                         },
                         {
                             name: 'Number of occurrences',
@@ -493,14 +485,14 @@ function echarts_4(chart) {
                                     color: '#ccc'
                                 }
                             },
-                            data: data.whiteBoxData
+                            data: whiteBoxData
                         }
                     ],
                     series: [{
                         name: '条',
                         type: 'bar',
                         yAxisIndex: 0,
-                        data: data.seriesData,
+                        data: seriesData,
                         label: {
                             normal: {
                                 show: true,
@@ -535,7 +527,7 @@ function echarts_4(chart) {
                         type: 'bar',
                         yAxisIndex: 1,
                         barGap: '-100%',
-                        data: data.whiteBoxData,
+                        data: whiteBoxData,
                         barWidth: 15,
                         itemStyle: {
                             normal: {
@@ -558,15 +550,17 @@ function echarts_4(chart) {
     // 初始化时设置为5个字段
     updateChart(5);
 
-    // 监听下拉框选择变化
-    fieldSelect.addEventListener('change', function () {
-        const selectedValue = parseInt(fieldSelect.value);
-        updateChart(selectedValue);
-    });
+    fieldSelect.addEventListener('click', function () {
+        // 获取输入框的值
+        const topN = document.getElementById('topN-input').value;
 
-    // window.addEventListener("resize", function () {
-    //     chart.resize();
-    // });
+        // 检查输入是否合法
+        if (topN === '' || isNaN(topN) || topN <= 0) {
+            alert('请输入一个有效的正整数！');
+            return;
+        }
+        updateChart(topN);
+    });
 }
 
 
