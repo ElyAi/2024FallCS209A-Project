@@ -202,22 +202,22 @@ public class AnswerQualityController {
         List<Answer> highScoreAnswersList = answerMapper.selectHighQualityAnswer(highScore);
         List<Answer> acceptedAnswersList = answerMapper.selectAcceptedAnswer();
         // 合并处理
-        List<Answer> validAnswersList = Stream.of(highScoreAnswersList, acceptedAnswersList)
+        List<Answer> highQualityAnswersList = Stream.of(highScoreAnswersList, acceptedAnswersList)
                 .flatMap(Collection::stream)
                 .distinct()
                 .toList();
-        validAnswersList = validAnswersList.stream().filter(answer -> answer.getOwnerId() != null).toList();
+        highQualityAnswersList = highQualityAnswersList.stream().filter(answer -> answer.getOwnerId() != null).toList();
         long totalUserCount = userMapper.selectCount(null);
         // 前 proportion%
         double highestReputation = userMapper.getKRankReputation((int) (totalUserCount * proportion / 100));
 
-        List<Answer> reputationAnswerList = validAnswersList.parallelStream()
+        List<Answer> reputationAnswerList = highQualityAnswersList.parallelStream()
                 .filter(answer -> {
                     int reputation = userMapper.getReputationByUserId(answer.getOwnerId());
                     return reputation >= highestReputation;
                 }).toList();
 
-        return (double) reputationAnswerList.size() / validAnswersList.size();
+        return (double) reputationAnswerList.size() / highQualityAnswersList.size();
     }
 
     @GetMapping("/getReputationInfluenceQuality")
@@ -227,11 +227,11 @@ public class AnswerQualityController {
         List<Answer> highScoreAnswersList = answerMapper.selectHighQualityAnswer(highScore);
         List<Answer> acceptedAnswersList = answerMapper.selectAcceptedAnswer();
         // 合并处理
-        List<Answer> validAnswersList = Stream.of(highScoreAnswersList, acceptedAnswersList)
+        List<Answer> highQualityAnswersList = Stream.of(highScoreAnswersList, acceptedAnswersList)
                 .flatMap(Collection::stream)
                 .distinct()
                 .toList();
-        validAnswersList = validAnswersList.stream().filter(answer -> answer.getOwnerId() != null).toList();
+        highQualityAnswersList = highQualityAnswersList.stream().filter(answer -> answer.getOwnerId() != null).toList();
         long totalUserCount = userMapper.selectCount(null);
         // 前 1%
         double highestReputation = userMapper.getKRankReputation((int) (totalUserCount / 100));
@@ -244,36 +244,36 @@ public class AnswerQualityController {
 
         Map<String, Double> reputationMap = new HashMap<>();
 
-        List<Answer> reputationAnswerList = validAnswersList.parallelStream()
+        List<Answer> reputationAnswerList = highQualityAnswersList.parallelStream()
                 .filter(answer -> {
                     int reputation = userMapper.getReputationByUserId(answer.getOwnerId());
                     return reputation >= highestReputation;
                 }).toList();
-        double percentage = (double) reputationAnswerList.size() / validAnswersList.size();
+        double percentage = (double) reputationAnswerList.size() / highQualityAnswersList.size();
         reputationMap.put("0.01", percentage);
 
-        reputationAnswerList = validAnswersList.parallelStream()
+        reputationAnswerList = highQualityAnswersList.parallelStream()
                 .filter(answer -> {
                     int reputation = userMapper.getReputationByUserId(answer.getOwnerId());
                     return reputation >= higherReputation;
                 }).toList();
-        percentage = (double) reputationAnswerList.size() / validAnswersList.size();
+        percentage = (double) reputationAnswerList.size() / highQualityAnswersList.size();
         reputationMap.put("0.05", percentage);
 
-        reputationAnswerList = validAnswersList.parallelStream()
+        reputationAnswerList = highQualityAnswersList.parallelStream()
                 .filter(answer -> {
                     int reputation = userMapper.getReputationByUserId(answer.getOwnerId());
                     return reputation >= normalReputation;
                 }).toList();
-        percentage = (double) reputationAnswerList.size() / validAnswersList.size();
+        percentage = (double) reputationAnswerList.size() / highQualityAnswersList.size();
         reputationMap.put("0.10", percentage);
 
-        reputationAnswerList = validAnswersList.parallelStream()
+        reputationAnswerList = highQualityAnswersList.parallelStream()
                 .filter(answer -> {
                     int reputation = userMapper.getReputationByUserId(answer.getOwnerId());
                     return reputation >= halfReputation;
                 }).toList();
-        percentage = (double) reputationAnswerList.size() / validAnswersList.size();
+        percentage = (double) reputationAnswerList.size() / highQualityAnswersList.size();
         reputationMap.put("0.50", percentage);
 
         return reputationMap.entrySet().stream().toList();
