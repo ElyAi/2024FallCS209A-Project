@@ -1,0 +1,42 @@
+/* 基础样式 */
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #f0f0f0;
+}
+
+/* 样式区分不同主题的内容 */
+.theme-content {
+    display: none; /* 默认隐藏所有内容 */
+}
+
+.java-topics {
+    background-color: lightblue;
+    padding: 20px;
+}
+
+.user-engagement {
+    background-color: lightgreen;
+    padding: 20px;
+}
+
+.common-mistakes {
+    background-color: lightcoral;
+    padding: 20px;
+}
+
+.answer-quality {
+    background-color: lightgoldenrodyellow;
+    padding: 20px;
+}
