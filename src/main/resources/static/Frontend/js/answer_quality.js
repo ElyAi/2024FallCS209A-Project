@@ -17,11 +17,11 @@ function echarts_2(chart) {
     function updateChart(numFields) {
         let explaination = " ";
         if (numFields === "Time") {
-            explaination = "'Top' means the probability of being accepted from the first n earliest created answers"
+            explaination = "'Top' means the probability of being high-quality answer from the first n earliest created answers"
         }else if (numFields === "Reputation") {
-            explaination = "The probability of accepting the answers of users in the top n parts of reputation"
+            explaination = "The probability of high-quality answers of users in the top n parts of reputation"
         }else {
-            explaination = "'Top' means the probability of the longest answer in the first n contents being accepted"
+            explaination = "'Top' means the probability of the longest answer in the first n contents being high-quality answer"
         }
         // 显示加载动画
         document.querySelector('.loading').style.display = 'block';
@@ -41,7 +41,7 @@ function echarts_2(chart) {
                 dataArray.sort((a, b) => a.value - b.value);  // 升序排序，若需降序则用 b.value - a.value
 
                 const yAxisData = dataArray.map(item => item.key); // 按排序后的顺序提取字段名
-                const whiteBoxData = dataArray.map(item => item.value); // 按排序后的顺序提取数值
+                const whiteBoxData = dataArray.map(item => item.value.toFixed(4)); // 按排序后的顺序提取数值
 
                 const option = {
                     backgroundColor: '#00264d', // 设置背景色
@@ -180,7 +180,7 @@ function echarts_5(chart) {
                 dataArray.sort((a, b) => a.value - b.value);  // 升序排序，若需降序则用 b.value - a.value
 
                 const yAxisData = dataArray.map(item => item.key); // 按排序后的顺序提取字段名
-                const whiteBoxData = dataArray.map(item => item.value); // 按排序后的顺序提取数值
+                const whiteBoxData = dataArray.map(item => item.value.toFixed(4)); // 按排序后的顺序提取数值
 
                 const option = {
                     tooltip: {
@@ -485,7 +485,7 @@ function echarts_6(chart) {
                     const value = item[key]; // 获取对应的值（如 77）
                     return {
                         name: key,  // 键名作为 name
-                        value: value * 100 // 对应的值作为 value
+                        value: value.toFixed(2) * 100 // 对应的值作为 value
                     };
                 });
 
